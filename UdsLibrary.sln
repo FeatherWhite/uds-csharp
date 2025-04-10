@@ -7,6 +7,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Triumph.Uds", "UdsLibrary\T
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "IsoTpLibrary", "..\isotp-csharp\IsoTpLibrary\IsoTpLibrary.csproj", "{00B07BED-948C-47D3-BF10-6C1992852BAB}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Triumph.UdsTests", "Triumph.UdsTests2\Triumph.UdsTests.csproj", "{A57A2CB4-7F0E-42F5-A747-1929E580AB4C}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -21,6 +23,10 @@ Global
 		{00B07BED-948C-47D3-BF10-6C1992852BAB}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{00B07BED-948C-47D3-BF10-6C1992852BAB}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{00B07BED-948C-47D3-BF10-6C1992852BAB}.Release|Any CPU.Build.0 = Release|Any CPU
+		{A57A2CB4-7F0E-42F5-A747-1929E580AB4C}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{A57A2CB4-7F0E-42F5-A747-1929E580AB4C}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{A57A2CB4-7F0E-42F5-A747-1929E580AB4C}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{A57A2CB4-7F0E-42F5-A747-1929E580AB4C}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
