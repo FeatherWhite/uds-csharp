@@ -5,19 +5,31 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Triumph.Uds;
 
 namespace Triumph.UdsLibrary.Tests
 {
     [TestClass()]
     public class UdsCommunicationTests
     {
-        [TestMethod()]
-        public void DiagnosticReceiveCanFrameTest()
+        Client client;
+        [TestInitialize]
+        public void TestInitialize()
         {
-            UdsCommunication uds = new UdsCommunication();
-            uds.DiagnosticRequestPid(Uds.DiagnosticPidRequestType.DIAGNOSTIC_ENHANCED_PID, 0x790, new byte[] { 0x00,0x05});
+            client = new Client();
+            client.Init();
+            client.Tp.hdl.physSa = 0x7E8;
+            client.Tp.hdl.physTa = 0x7E0;
+            client.Tp.hdl.funcSa = 0xFFFFFFFF;
+            client.Tp.hdl.funcTa = 0x7DF;
+            client.Tp.UDSISOTpCInit();
 
-            uds.DiagnosticReceiveCanFrame();
+        }
+        [TestMethod]
+        public void Test0x22UnpackRDBIResponse()
+        {
+            ushort[] did_list = { 0xf190 };
+            client.UDSSendRDBI(did_list,1);
         }
     }
 }
