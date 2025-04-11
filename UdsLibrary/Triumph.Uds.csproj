@@ -50,11 +50,5 @@
     <Compile Include="UdsConfig.cs" />
     <Compile Include="UdsType.cs" />
   </ItemGroup>
-  <ItemGroup>
-    <ProjectReference Include="..\..\isotp-csharp\IsoTpLibrary\IsoTpLibrary.csproj">
-      <Project>{00b07bed-948c-47d3-bf10-6c1992852bab}</Project>
-      <Name>IsoTpLibrary</Name>
-    </ProjectReference>
-  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>
