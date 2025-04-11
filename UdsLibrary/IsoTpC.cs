@@ -3,6 +3,7 @@ using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Linq;
+using System.Runtime.Remoting.Messaging;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
@@ -25,15 +26,21 @@ namespace Triumph.Uds
     /// </summary>
     public class IsoTpC
     {
-        UDSISOTpC_t hdl = new UDSISOTpC_t()
+        public UDSISOTpC_t hdl { get; set; } = new UDSISOTpC_t()
         {
             physLink = new IsoTpLink(),
             funcLink = new IsoTpLink()
         };
+
         IsoTp isoTp;
-        public int Poll()
+
+        public IsoTpC()
         {
-            int status = 0;
+            isoTp = new IsoTp();
+        }
+        public uint Poll()
+        {
+            uint status = 0;
             isoTp.link = hdl.physLink;
             isoTp.Poll();
             if(hdl.physLink.SendStatus == IsoTpSendStatus.InProgress)
@@ -46,13 +53,13 @@ namespace Triumph.Uds
         {
             int ret = -1;
             IsoTpLink link;
-            UDS_A_TA_Type_t ta_type = (info != null) ? info.Value.A_TA_Type : (byte)UDS_A_TA_Type_t.UDS_A_TA_TYPE_PHYSICAL;
+            UDS_A_TA_Type_t ta_type = (info.HasValue) ? info.Value.A_TA_Type : (byte)UDS_A_TA_Type_t.PHYSICAL;
             switch (ta_type)
             {
-                case UDS_A_TA_Type_t.UDS_A_TA_TYPE_PHYSICAL:
+                case UDS_A_TA_Type_t.PHYSICAL:
                     link = hdl.physLink;
                     break;
-                case UDS_A_TA_Type_t.UDS_A_TA_TYPE_FUNCTIONAL:
+                case UDS_A_TA_Type_t.FUNCTIONAL:
                     link = hdl.funcLink;
                     if(len > 7)
                     {
@@ -64,7 +71,7 @@ namespace Triumph.Uds
                     ret = -4;
                     goto done;
             }
-
+            isoTp.link = link;
             IsoTpReturnCode sendStatus = isoTp.Send(buf, len);
             switch (sendStatus)
             {
@@ -81,9 +88,76 @@ namespace Triumph.Uds
                 return ret;
         }
 
-
+        public int Recv(byte[] buf, ushort bufsize, UDSSDU_t? info)
+        {
+            ushort outSize = 0;
+            isoTp.link = hdl.physLink;
+            IsoTpReturnCode ret = isoTp.Receive(buf, bufsize,ref outSize);
+            if(ret == IsoTpReturnCode.OK)
+            {
+                if (info.HasValue)
+                {
+                    UDSSDU_t temp = info.Value;
+                    temp.A_TA = hdl.physSa;
+                    temp.A_SA = hdl.physTa;
+                    temp.A_TA_Type = UDS_A_TA_Type_t.PHYSICAL;
+                }
+            }
+            else if(ret == IsoTpReturnCode.NO_DATA)
+            {
+                isoTp.link = hdl.funcLink;
+                ret = isoTp.Receive(buf, bufsize, ref outSize);
+                if(ret == IsoTpReturnCode.OK)
+                {
+                    if (info.HasValue)
+                    {
+                        UDSSDU_t temp = info.Value;
+                        temp.A_TA = hdl.funcSa;
+                        temp.A_SA = hdl.funcTa;
+                        temp.A_TA_Type = UDS_A_TA_Type_t.FUNCTIONAL;
+                    }
+                }
+                else if(ret == IsoTpReturnCode.NO_DATA)
+                {
+                    return 0;
+                }
+                else
+                {
+                    //Log.Info("unhandled return code from func link");
+                }
+            }
+            else
+            {
+                //Log.Info("unhandled return code from phys link");
+            }
+            return outSize;
+        }
+        public UDSErr_t UDSISOTpCInit(UDSISOTpCConfig_t? cfg)
+        {
+            if (!cfg.HasValue)
+            {
+                return UDSErr_t.UDS_ERR_INVALID_ARG;
+            }
+            hdl.physSa = cfg.Value.source_addr;
+            hdl.physTa = cfg.Value.target_addr;
+            hdl.funcSa = cfg.Value.source_addr_func;
+            hdl.funcTa = cfg.Value.target_addr_func;
+            isoTp.link = hdl.physLink;
+            isoTp.InitLink(hdl.physSa, hdl.SendBuf, (ushort)hdl.SendBuf.Length, hdl.RecvBuf, (ushort)hdl.RecvBuf.Length);
+            isoTp.link = hdl.funcLink;
+            isoTp.InitLink(hdl.funcTa, hdl.RecvBuf, (ushort)hdl.SendBuf.Length, hdl.RecvBuf, (ushort)hdl.RecvBuf.Length);
+            return UDSErr_t.UDS_OK;
+        }
+        public UDSErr_t UDSISOTpCInit()
+        {
+            isoTp.link = hdl.physLink;
+            isoTp.InitLink(hdl.physSa, hdl.SendBuf, (ushort)hdl.SendBuf.Length, hdl.RecvBuf, (ushort)hdl.RecvBuf.Length);
+            isoTp.link = hdl.funcLink;
+            isoTp.InitLink(hdl.funcTa, hdl.RecvBuf, (ushort)hdl.SendBuf.Length, hdl.RecvBuf, (ushort)hdl.RecvBuf.Length);
+            return UDSErr_t.UDS_OK;
+        }
     }
-    public enum UDSTpStatusFlags : int
+    public enum UDSTpStatusFlags : uint
     {
         UDS_TP_IDLE = 0x0000,
         UDS_TP_SEND_IN_PROGRESS = 0x0001,
@@ -92,18 +166,26 @@ namespace Triumph.Uds
     };
     public enum UDS_A_Mtype_t
     {
-        UDS_A_MTYPE_DIAG = 0,
-        UDS_A_MTYPE_REMOTE_DIAG,
-        UDS_A_MTYPE_SECURE_DIAG,
-        UDS_A_MTYPE_SECURE_REMOTE_DIAG,
+        DIAG = 0,
+        REMOTE_DIAG,
+        SECURE_DIAG,
+        SECURE_REMOTE_DIAG,
     }    
 
-    public enum UDS_A_TA_Type_t
+    public enum UDS_A_TA_Type_t : byte
     {
-        UDS_A_TA_TYPE_PHYSICAL = 0, // unicast (1:1)
-        UDS_A_TA_TYPE_FUNCTIONAL,   // multicast
-    }    
+        PHYSICAL = 0, // unicast (1:1)
+        FUNCTIONAL,   // multicast
+    }
 
+    public struct UDSISOTpCConfig_t
+    {
+        public uint source_addr;
+        public uint target_addr;
+        public uint source_addr_func;
+        public uint target_addr_func;
+    }
+    
 
     /**
      * @brief Service data unit (SDU)
