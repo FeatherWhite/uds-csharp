@@ -19,12 +19,6 @@ namespace Triumph.UdsLibrary
         public const uint NEGATIVE_RESPONSE_MODE_INDEX = 1;
         public const uint NEGATIVE_RESPONSE_NRC_INDEX = 2;
 
-        public const byte STATE_IDLE = 0;
-        public const byte STATE_SENDING = 1;
-        public const byte STATE_AWAIT_SEND_COMPLETE = 2;
-        public const byte STATE_AWAIT_RESPONSE = 3;
-        public const byte STATE_PROCESS_RESPONSE = 4;
-
         private IsoTp isoTp;
         public uint SendId { get; set; }
         public UdsCommunication()
@@ -302,52 +296,6 @@ namespace Triumph.UdsLibrary
         private byte Min(byte x, byte y)
         {
             return x < y ? x : y;
-        }
-
-        private UDSErr_t PreRequestCheck()
-        {
-            if(link == null)
-            {
-                return UDSErr_t.UDS_ERR_INVALID_ARG;
-            }
-            if(link.State != STATE_IDLE)
-            {
-                return UDSErr_t.UDS_ERR_BUSY;
-            }
-            link.RecvSize = 0;
-            link.SendSize = 0;
-            if(isoTp == null)
-            {
-                return UDSErr_t.UDS_ERR_TPORT;
-            }
-            return UDSErr_t.UDS_OK;
-        }
-
-        public UDSErr_t UDSSendRDBI(ushort[] didList,ushort numDataIdentifiers)
-        {
-            const ushort didLenBytes = 2;
-            UDSErr_t err = PreRequestCheck();
-            if(err != UDSErr_t.UDS_OK)
-            {
-                return err;
-            }
-            if(didList == null || numDataIdentifiers == 0)
-            {
-                return UDSErr_t.UDS_ERR_INVALID_ARG;
-            }
-            link.SendBuffer[0] = (byte)UDSDiagnosticServiceId.kSID_READ_DATA_BY_IDENTIFIER;
-            for(int i = 0; i < numDataIdentifiers; i++)
-            {
-                ushort offset = (ushort)(1 + didLenBytes * i);
-                if((offset + 2) > link.SendBuffer.Length)
-                {
-                    return UDSErr_t.UDS_ERR_INVALID_ARG;
-                }
-                link.SendBuffer[offset] = Convert.ToByte((didList[i] & 0xFF00) >> 8);
-                link.SendBuffer[offset + 1] = Convert.ToByte(didList[i] & 0xFF);
-            }
-            link.SendSize = Convert.ToUInt16(1 + (numDataIdentifiers * didLenBytes));
-
         }
     }
 }
