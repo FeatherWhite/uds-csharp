@@ -41,6 +41,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Client.cs" />
     <Compile Include="Config.cs" />
     <Compile Include="IsoTpC.cs" />
     <Compile Include="UdsCommunication.cs" />
