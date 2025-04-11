@@ -5,11 +5,11 @@ using System.Runtime.InteropServices;
 // 有关程序集的一般信息由以下
 // 控制。更改这些特性值可修改
 // 与程序集关联的信息。
-[assembly: AssemblyTitle("Triumph.UdsTests")]
+[assembly: AssemblyTitle("Triumph.UdsTests2")]
 [assembly: AssemblyDescription("")]
 [assembly: AssemblyConfiguration("")]
 [assembly: AssemblyCompany("Microsoft")]
-[assembly: AssemblyProduct("Triumph.UdsTests")]
+[assembly: AssemblyProduct("Triumph.UdsTests2")]
 [assembly: AssemblyCopyright("Copyright © Microsoft 2025")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]
@@ -20,7 +20,7 @@ using System.Runtime.InteropServices;
 [assembly: ComVisible(false)]
 
 // 如果此项目向 COM 公开，则下列 GUID 用于类型库的 ID
-[assembly: Guid("ca6288aa-e1d3-41b6-bc0e-16a7454fb424")]
+[assembly: Guid("a57a2cb4-7f0e-42f5-a747-1929e580ab4c")]
 
 // 程序集的版本信息由下列四个值组成: 
 //
