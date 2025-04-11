@@ -44,6 +44,7 @@
     <Compile Include="Client.cs" />
     <Compile Include="Config.cs" />
     <Compile Include="IsoTpC.cs" />
+    <Compile Include="IsoTpZLG.cs" />
     <Compile Include="UdsCommunication.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="UdsConfig.cs" />
