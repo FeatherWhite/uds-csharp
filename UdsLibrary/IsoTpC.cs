@@ -170,7 +170,7 @@ namespace Triumph.Uds
         REMOTE_DIAG,
         SECURE_DIAG,
         SECURE_REMOTE_DIAG,
-    }    
+    }
 
     public enum UDS_A_TA_Type_t : byte
     {
