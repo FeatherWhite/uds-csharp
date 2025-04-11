@@ -242,8 +242,8 @@ namespace Triumph.Uds
                     break;
                 case STATE_AWAIT_RESPONSE:
                     { 
-                    UDSSDU_t info3 = new UDSSDU_t();
-                    int len = Tp.Recv(recvBuffer, (ushort)recvBuffer.Length, info3);
+                    UDSSDU_t info = new UDSSDU_t();
+                    int len = Tp.Recv(recvBuffer, (ushort)recvBuffer.Length, info);
                     if (len < 0)
                     {
                         err = UDSErr_t.UDS_ERR_TPORT;
