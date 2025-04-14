@@ -88,7 +88,7 @@ namespace Triumph.Uds
                 return ret;
         }
 
-        public int Recv(byte[] buf, ushort bufsize, UDSSDU_t? info)
+        public int Receive(byte[] buf, ushort bufsize, UDSSDU_t? info)
         {
             ushort outSize = 0;
             isoTp.link = hdl.physLink;
