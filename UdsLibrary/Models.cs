@@ -6,7 +6,11 @@ using System.Threading.Tasks;
 
 namespace Triumph.Uds
 {
-    internal class Models
+    public class UDSRDBIVar<T>
     {
+        public ushort DID;
+        public ushort Len;
+        public byte[] Data;
+        public Func<byte[], byte[],int, int,T> UnpackFn;
     }
 }
