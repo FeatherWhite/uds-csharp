@@ -48,7 +48,7 @@ namespace Triumph.Uds.Tests
             Assert.AreEqual(19, client.RecvSize);
             Assert.AreEqual("62-F1-8C-FF-FF-FF-FF-FF-FF-FF-FF-FF-FF-FF-FF-FF-FF-FF-FF"
                 , BitConverter.ToString(client.RecvBuffer, 0, client.RecvSize));
-            //Console.WriteLine($"接收数据为:{BitConverter.ToString(client.RecvBuffer, 0, client.RecvSize)}");
+            Console.WriteLine($"接收数据为:{BitConverter.ToString(client.RecvBuffer, 0, client.RecvSize)}");
         }
         [TestCleanup]
         public void TestCleanup()
