@@ -47,6 +47,24 @@ namespace Triumph.Uds.Tests
                 , BitConverter.ToString(client.RecvBuffer, 0, client.RecvSize));
             Console.WriteLine($"接收数据为:{BitConverter.ToString(client.RecvBuffer, 0, client.RecvSize)}");
         }
+
+        [TestMethod]
+        public void Test0x22UnpackRDBINegativeResponse()
+        {
+            ushort[] did_list = { 0xF18D };
+            client.UDSSendRDBI(did_list, (ushort)did_list.Length);
+            Thread.Sleep(100);
+            UDSErr_t err = new UDSErr_t();
+            while (client.State != Client.STATE_IDLE)
+            {
+                err = client.Poll();
+            }
+            Assert.AreEqual(3, client.RecvSize);
+            Assert.AreEqual("7F-22-31"
+                , BitConverter.ToString(client.RecvBuffer, 0, client.RecvSize));
+            Assert.AreEqual(UDSErr_t.UDS_NRC_RequestOutOfRange, err);
+        }
+
         [TestCleanup]
         public void TestCleanup()
         {
