@@ -116,35 +116,7 @@ namespace Triumph.Uds
             }
             return UDSErr_t.UDS_OK;
         }
-
-        
-
-        public UDSErr_t UDSSendRDBI(ushort[] didList, ushort numDataIdentifiers)
-        {
-            const ushort didLenBytes = 2;
-            UDSErr_t err = PreRequestCheck();
-            if (err != UDSErr_t.UDS_OK)
-            {
-                return err;
-            }
-            if (didList == null || numDataIdentifiers == 0)
-            {
-                return UDSErr_t.UDS_ERR_INVALID_ARG;
-            }
-            SendBuffer[0] = (byte)UDSDiagnosticServiceId.kSID_READ_DATA_BY_IDENTIFIER;
-            for (int i = 0; i < numDataIdentifiers; i++)
-            {
-                ushort offset = (ushort)(1 + didLenBytes * i);
-                if ((offset + 2) > SendBuffer.Length)
-                {
-                    return UDSErr_t.UDS_ERR_INVALID_ARG;
-                }
-                SendBuffer[offset] = Convert.ToByte((didList[i] & 0xFF00) >> 8);
-                SendBuffer[offset + 1] = Convert.ToByte(didList[i] & 0xFF);
-            }
-            SendSize = Convert.ToUInt16(1 + (numDataIdentifiers * didLenBytes));
-            return SendRequest();
-        }
+                
         private UDSErr_t SendRequest()
         {
             optionsCopy = options;
@@ -445,6 +417,33 @@ namespace Triumph.Uds
                 ChangeState(STATE_IDLE);
             }
             return err;
+        }
+
+        public UDSErr_t UDSSendRDBI(ushort[] didList, ushort numDataIdentifiers)
+        {
+            const ushort didLenBytes = 2;
+            UDSErr_t err = PreRequestCheck();
+            if (err != UDSErr_t.UDS_OK)
+            {
+                return err;
+            }
+            if (didList == null || numDataIdentifiers == 0)
+            {
+                return UDSErr_t.UDS_ERR_INVALID_ARG;
+            }
+            SendBuffer[0] = (byte)UDSDiagnosticServiceId.kSID_READ_DATA_BY_IDENTIFIER;
+            for (int i = 0; i < numDataIdentifiers; i++)
+            {
+                ushort offset = (ushort)(1 + didLenBytes * i);
+                if ((offset + 2) > SendBuffer.Length)
+                {
+                    return UDSErr_t.UDS_ERR_INVALID_ARG;
+                }
+                SendBuffer[offset] = Convert.ToByte((didList[i] & 0xFF00) >> 8);
+                SendBuffer[offset + 1] = Convert.ToByte(didList[i] & 0xFF);
+            }
+            SendSize = Convert.ToUInt16(1 + (numDataIdentifiers * didLenBytes));
+            return SendRequest();
         }
     }
 }
