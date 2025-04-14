@@ -46,6 +46,7 @@
     <Compile Include="Config.cs" />
     <Compile Include="IsoTpC.cs" />
     <Compile Include="IsoTpZLGUSBCANII.cs" />
+    <Compile Include="Models.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="UdsConfig.cs" />
     <Compile Include="UdsType.cs" />
