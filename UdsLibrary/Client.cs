@@ -504,5 +504,18 @@ namespace Triumph.Uds
             SendSize = Convert.ToUInt16(3 + size);
             return SendRequest();
         }
+
+        public UDSErr_t UDSSendDiagSessCtrl(byte mode)
+        {
+            UDSErr_t err = PreRequestCheck();
+            if (err != UDSErr_t.UDS_OK)
+            {
+                return err;
+            }
+            SendBuffer[0] = (byte)UDSDiagnosticServiceId.kSID_DIAGNOSTIC_SESSION_CONTROL;
+            SendBuffer[1] = mode;
+            SendSize = 2;
+            return SendRequest();
+        }
     }
 }
