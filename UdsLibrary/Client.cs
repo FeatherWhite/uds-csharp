@@ -446,9 +446,10 @@ namespace Triumph.Uds
             return SendRequest();
         }
 
-        public UDSErr_t UDSUnpackRDBIResponse<T>(UDSRDBIVar<T>[] vars ,ushort numVars)
+        public UDSErr_t UDSUnpackRDBIResponse<T>(UDSRDBIVar<T>[] vars ,ushort numVars) where T : new()
         {
             ushort offset = UDS_0X22_RESP_BASE_LEN;
+            
             if (vars == null)
             {
                 return UDSErr_t.UDS_ERR_INVALID_ARG;
@@ -468,9 +469,9 @@ namespace Triumph.Uds
                 {
                     return UDSErr_t.UDS_ERR_RESP_TOO_SHORT;
                 }
-                if (vars[i].UnpackFn != null)
+                if (vars[i].Unpack != null)
                 {
-                    vars[i].UnpackFn(vars[i].Data, RecvBuffer, offset + sizeof(ushort), vars[i].Len);
+                    vars[i].Unpack(vars[i].Data, RecvBuffer, offset + sizeof(ushort), vars[i].Len,ref vars[i].Value);
                 }
                 else
                 {
