@@ -70,5 +70,21 @@ namespace Triumph.Uds.Tests
         {
             can.Close();
         }
+
+        [TestMethod()]
+        public void Test0x10UDSSendDiagSessCtrl()
+        {
+            client.UDSSendDiagSessCtrl(0x02);
+            Thread.Sleep(100);
+            UDSErr_t err = new UDSErr_t();
+            while (client.State != Client.STATE_IDLE)
+            {
+                err = client.Poll();
+            }
+            Assert.AreEqual(6, client.RecvSize);
+            Assert.AreEqual("50-02-00-32-01-F4"
+                , BitConverter.ToString(client.RecvBuffer, 0, client.RecvSize));
+            Assert.AreEqual(UDSErr_t.UDS_OK, err);
+        }
     }
 }
