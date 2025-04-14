@@ -11,6 +11,8 @@ namespace Triumph.Uds
         public ushort DID;
         public ushort Len;
         public byte[] Data;
-        public Func<byte[], byte[],int, int,T> UnpackFn;
+        public delegate void UnpackFn(byte[] target, byte[] source, int offset, int len,ref T res);
+        public UnpackFn Unpack;
+        public T Value;
     }
 }
