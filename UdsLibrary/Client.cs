@@ -445,5 +445,40 @@ namespace Triumph.Uds
             SendSize = Convert.ToUInt16(1 + (numDataIdentifiers * didLenBytes));
             return SendRequest();
         }
+
+        public UDSErr_t UDSUnpackRDBIResponse<T>(UDSRDBIVar<T>[] vars ,ushort numVars)
+        {
+            ushort offset = UDS_0X22_RESP_BASE_LEN;
+            if (vars == null)
+            {
+                return UDSErr_t.UDS_ERR_INVALID_ARG;
+            }
+            for(int i = 0; i < numVars; i++)
+            {
+                if(offset + sizeof(ushort) > RecvSize)
+                {
+                    return UDSErr_t.UDS_ERR_RESP_TOO_SHORT;
+                }
+                ushort did = Convert.ToUInt16((RecvBuffer[offset] << 8) | RecvBuffer[offset + 1]);
+                if(did != vars[i].DID)
+                {
+                    return UDSErr_t.UDS_ERR_DID_MISMATCH;
+                }
+                if(offset + sizeof(ushort) + vars[i].Len > RecvSize)
+                {
+                    return UDSErr_t.UDS_ERR_RESP_TOO_SHORT;
+                }
+                if (vars[i].UnpackFn != null)
+                {
+                    vars[i].UnpackFn(vars[i].Data, RecvBuffer, offset + sizeof(ushort), vars[i].Len);
+                }
+                else
+                {
+                    return UDSErr_t.UDS_ERR_INVALID_ARG;
+                }
+                offset += (ushort)(sizeof(ushort) + vars[i].Len);
+            }
+            return UDSErr_t.UDS_OK;
+        }
     }
 }
