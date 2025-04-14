@@ -38,12 +38,9 @@ namespace Triumph.Uds.Tests
             ushort[] did_list = { 0xF18C };
             client.UDSSendRDBI(did_list, 1);
             Thread.Sleep(100);
-            while (client.Poll() == UDSErr_t.UDS_OK)
+            while (client.State != Client.STATE_IDLE)
             {
-                if(client.State == Client.STATE_IDLE)
-                {
-                    break;
-                }
+                client.Poll();
             }
             Assert.AreEqual(19, client.RecvSize);
             Assert.AreEqual("62-F1-8C-FF-FF-FF-FF-FF-FF-FF-FF-FF-FF-FF-FF-FF-FF-FF-FF"
