@@ -86,5 +86,22 @@ namespace Triumph.Uds.Tests
                 , BitConverter.ToString(client.RecvBuffer, 0, client.RecvSize));
             Assert.AreEqual(UDSErr_t.UDS_OK, err);
         }
+        [TestMethod()]
+        public void Test0x2eUDSSendWDBI()
+        {
+            byte[] payload = [ 0x01, 0x02, 0x03, 0x04, 0x05, 0x06, 0x07, 0x08,
+                0x09, 0x10, 0x11, 0x12, 0x13, 0x14, 0x15, 0x16 ];
+            client.UDSSendWDBI(0xF184, payload);
+            Thread.Sleep(100);
+            UDSErr_t err = new UDSErr_t();
+            while (client.State != Client.STATE_IDLE)
+            {
+                err = client.Poll();
+            }
+            Assert.AreEqual(3, client.RecvSize);
+            Assert.AreEqual("6E-F1-84"
+                , BitConverter.ToString(client.RecvBuffer, 0, client.RecvSize));
+            Assert.AreEqual(UDSErr_t.UDS_OK, err);
+        }
     }
 }
