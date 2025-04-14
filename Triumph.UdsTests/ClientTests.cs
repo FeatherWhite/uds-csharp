@@ -7,6 +7,7 @@ using System.Text;
 using System.Threading.Tasks;
 using ZLG.CAN;
 using System.Threading;
+using System.Runtime.InteropServices;
 
 namespace Triumph.Uds.Tests
 {
@@ -29,23 +30,60 @@ namespace Triumph.Uds.Tests
             client = new Client();
             client.Init();
             client.Tp = new IsoTpZLGUSBCANII(can);
-            client.Tp.Init(0x782, 0x78A,0xFFFFFFFF, 0x7DF);
+            client.Tp.Init(0x782, 0x78A, 0xFFFFFFFF, 0x7DF);
 
         }
         [TestMethod]
         public void Test0x22UnpackRDBIResponse()
         {
             ushort[] did_list = { 0xF18C };
-            client.UDSSendRDBI(did_list, 1);
+            client.UDSSendRDBI(did_list, (ushort)did_list.Length);
             Thread.Sleep(100);
+            UDSErr_t err = new UDSErr_t();
             while (client.State != Client.STATE_IDLE)
             {
-                client.Poll();
+                err = client.Poll();
             }
             Assert.AreEqual(19, client.RecvSize);
             Assert.AreEqual("62-F1-8C-FF-FF-FF-FF-FF-FF-FF-FF-FF-FF-FF-FF-FF-FF-FF-FF"
                 , BitConverter.ToString(client.RecvBuffer, 0, client.RecvSize));
-            Console.WriteLine($"接收数据为:{BitConverter.ToString(client.RecvBuffer, 0, client.RecvSize)}");
+            Assert.AreEqual(UDSErr_t.UDS_OK, err);
+            UDSRDBIVar<RDBITestModel>[] rdbi =
+            {
+                new UDSRDBIVar<RDBITestModel>()
+                {
+                    DID = 0xF18C,
+                    Len = (ushort)Marshal.SizeOf(typeof(RDBITestModel)),
+                    Unpack = Unpack,
+                    Data = new byte[Marshal.SizeOf(typeof(RDBITestModel))]
+                }
+            };
+            var res = client.UDSUnpackRDBIResponse(rdbi, 1);
+
+            Assert.AreEqual(UDSErr_t.UDS_OK, res);
+            for (int i = 0; i < rdbi[0].Len; i++)
+            {
+                Assert.AreEqual(0xff, rdbi[0].Data[i]);
+            }
+            Assert.AreEqual(0xffffffff, rdbi[0].Value.one);
+            Assert.AreEqual(0xffffffff, rdbi[0].Value.two);
+            Assert.AreEqual(0xffffffff, rdbi[0].Value.three);
+            Assert.AreEqual(0xffffffff, rdbi[0].Value.four);
+        }
+
+        private void Unpack(byte[] target, byte[] source, int offset, int len, ref RDBITestModel res)
+        {
+            Array.Copy(source, offset, target, 0, len);
+            res = Marshal.PtrToStructure<RDBITestModel>(Marshal.UnsafeAddrOfPinnedArrayElement(target, 0));
+        }
+
+        [StructLayout(LayoutKind.Sequential, Pack = 1)]
+        public struct RDBITestModel
+        {
+            public uint one;
+            public uint two;
+            public uint three;
+            public uint four;
         }
 
         [TestMethod]
