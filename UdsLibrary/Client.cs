@@ -480,5 +480,29 @@ namespace Triumph.Uds
             }
             return UDSErr_t.UDS_OK;
         }
+
+        public UDSErr_t UDSSendWDBI(ushort dataIdentifier, byte[] data)
+        {
+            UDSErr_t err = PreRequestCheck();
+            ushort size = Convert.ToUInt16(data.Length);
+            if (err != UDSErr_t.UDS_OK)
+            {
+                return err;
+            }
+            if(data == null || size == 0)
+            {
+                return UDSErr_t.UDS_ERR_INVALID_ARG;
+            }
+            SendBuffer[0] = (byte)UDSDiagnosticServiceId.kSID_WRITE_DATA_BY_IDENTIFIER;
+            if(SendBuffer.Length <= 3 || SendBuffer.Length <= 3 + size)
+            {
+                return UDSErr_t.UDS_ERR_BUFSIZ;
+            }
+            SendBuffer[1] = Convert.ToByte((dataIdentifier & 0xFF00) >> 8);
+            SendBuffer[2] = Convert.ToByte(dataIdentifier & 0xFF);
+            Array.Copy(data, 0, SendBuffer, 3, size);
+            SendSize = Convert.ToUInt16(3 + size);
+            return SendRequest();
+        }
     }
 }
