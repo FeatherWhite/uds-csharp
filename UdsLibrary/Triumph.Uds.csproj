@@ -9,7 +9,6 @@
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <RootNamespace>Triumph.Uds</RootNamespace>
     <AssemblyName>Triumph.Uds</AssemblyName>
-    
     <TargetFrameworkVersion>v4.8</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <Deterministic>true</Deterministic>
@@ -47,7 +46,6 @@
     <Compile Include="Config.cs" />
     <Compile Include="IsoTpC.cs" />
     <Compile Include="IsoTpZLGUSBCANII.cs" />
-    <Compile Include="UdsCommunication.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="UdsConfig.cs" />
     <Compile Include="UdsType.cs" />
@@ -57,8 +55,8 @@
       <Project>{00b07bed-948c-47d3-bf10-6c1992852bab}</Project>
       <Name>IsoTpLibrary</Name>
     </ProjectReference>
-    <ProjectReference Include="..\..\ZLGCAN\ZLG.CAN\ZLG.CAN.csproj">
-      <Project>{5773bcca-ef8f-4a9e-993f-5c38d456b2ca}</Project>
+    <ProjectReference Include="..\..\ZLG.CAN\ZLG.CAN\ZLG.CAN.csproj">
+      <Project>{4e3743b4-ddb7-49b8-9354-08a157adf246}</Project>
       <Name>ZLG.CAN</Name>
     </ProjectReference>
   </ItemGroup>
