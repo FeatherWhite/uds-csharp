@@ -10,6 +10,7 @@
     <RootNamespace>Triumph.UdsTests2</RootNamespace>
     <AssemblyName>Triumph.UdsTests2</AssemblyName>
     <TargetFrameworkVersion>v4.8</TargetFrameworkVersion>
+    <LangVersion>12</LangVersion>
     <FileAlignment>512</FileAlignment>
     <ProjectTypeGuids>{3AC096D0-A1C2-E12C-1390-A8335801FDAB};{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}</ProjectTypeGuids>
     <VisualStudioVersion Condition="'$(VisualStudioVersion)' == ''">10.0</VisualStudioVersion>
@@ -56,15 +57,23 @@
     <Otherwise />
   </Choose>
   <ItemGroup>
+    <Compile Include="ClientTests.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="UdsCommunicationTests.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\..\isotp-csharp\IsoTpLibrary\IsoTpLibrary.csproj">
+      <Project>{00b07bed-948c-47d3-bf10-6c1992852bab}</Project>
+      <Name>IsoTpLibrary</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\ZLGCAN\ZLG.CAN\ZLG.CAN.csproj">
+      <Project>{5773bcca-ef8f-4a9e-993f-5c38d456b2ca}</Project>
+      <Name>ZLG.CAN</Name>
+    </ProjectReference>
     <ProjectReference Include="..\UdsLibrary\Triumph.Uds.csproj">
-      <Project>{E955586D-2120-437F-AF64-AF7F816A77EE}</Project>
+      <Project>{e955586d-2120-437f-af64-af7f816a77ee}</Project>
       <Name>Triumph.Uds</Name>
     </ProjectReference>
   </ItemGroup>
