@@ -335,7 +335,7 @@ namespace Triumph.Uds
                         }
                         ushort p2 = (ushort)((RecvBuffer[2] << 8) | RecvBuffer[3]);
                         uint p2Star = (uint)((RecvBuffer[4] << 8) + RecvBuffer[5]) * 10;
-                        Console.WriteLine($"received new timings: p2: %{p2} , p2*: % {p2Star}");
+                        Console.WriteLine($"received new timings: p2: {p2} , p2Star: {p2Star}");
                         p2_ms = p2;
                         p2Star_ms = p2Star;
                         break;
