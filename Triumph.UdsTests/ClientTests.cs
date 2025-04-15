@@ -8,6 +8,7 @@ using System.Threading.Tasks;
 using ZLG.CAN;
 using System.Threading;
 using System.Runtime.InteropServices;
+using System.Reflection;
 
 namespace Triumph.Uds.Tests
 {
@@ -16,21 +17,29 @@ namespace Triumph.Uds.Tests
     {
         Client client;
         USBCanIICommunication can = new();
+        USBCanFDCommunication canFD = new();
         [TestInitialize]
         public void TestInitialize()
         {
-            can.SetPara(new ZLGCANPara()
-            {
-                deviceIndex = 0,
-                deviceInfoIndex = ZLG.CAN.Models.DeviceInfoIndex.ZCAN_USBCAN2,
-                kBaudrates = [ZLG.CAN.Models.KBaudrate._500kbps, ZLG.CAN.Models.KBaudrate._500kbps],
-                frameType = [ZLG.CAN.Models.FrameType.Standard, ZLG.CAN.Models.FrameType.Standard]
-            });
-            can.Open();
+            //can.SetPara(new ZLGCANPara()
+            //{
+            //    deviceIndex = 0,
+            //    deviceInfoIndex = ZLG.CAN.Models.DeviceInfoIndex.ZCAN_USBCAN2,
+            //    kBaudrates = [ZLG.CAN.Models.KBaudrate._500kbps, ZLG.CAN.Models.KBaudrate._500kbps],
+            //    frameType = [ZLG.CAN.Models.FrameType.Standard, ZLG.CAN.Models.FrameType.Standard]
+            //});
+            //can.Open();
+            canFD.DeviceInfoIndex
+            = [ZLG.CAN.Models.DeviceInfoIndex.ZCAN_USBCANFD_200U,
+                ZLG.CAN.Models.DeviceInfoIndex.ZCAN_USBCANFD_200U];
+            var isOpen = canFD.Open();
+            //Assert.AreEqual(true, isOpen);
             client = new Client();
             client.Init();
-            client.Tp = new IsoTpZLGUSBCANII(can);
+            //client.Tp = new IsoTpZLGUSBCANII(can);
+            client.Tp = new IsoTpZLGUSBCANFD(canFD);
             client.Tp.Init(0x782, 0x78A, 0xFFFFFFFF, 0x7DF);
+
 
         }
         [TestMethod]
