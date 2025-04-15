@@ -180,7 +180,6 @@ namespace Triumph.Uds
                         }
                         else if (SendSize == ret)
                         {
-                            Console.WriteLine($"send complete {ret} byte");
                             ChangeState(STATE_AWAIT_SEND_COMPLETE);
                         }
                         else
@@ -203,7 +202,7 @@ namespace Triumph.Uds
                         //需添加回调函数
                         if ((optionsCopy & UDS_SUPPRESS_POS_RESP) != 0)
                         {
-                            Console.WriteLine("send complete,change to idle");
+                            //Console.WriteLine("send complete,change to idle");
                             ChangeState(STATE_IDLE);
                         }
                         else
@@ -234,7 +233,7 @@ namespace Triumph.Uds
                         }
                         else
                         {
-                                Console.WriteLine($"received {len} bytes.");
+                                Console.WriteLine($"received {len} bytes. Processing...");
                                 RecvSize = (ushort)len;
                                 //RecvBuffer = Tp.hdl.RecvBuf;
                                 err = ValidateServerResponse();
