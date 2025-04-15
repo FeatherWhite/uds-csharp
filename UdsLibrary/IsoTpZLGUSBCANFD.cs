@@ -25,37 +25,94 @@ namespace Triumph.Uds
         {
             while (true)
             {
-                //bool ret = false;
-                var gets = can.Receive<ZCAN_Receive_Data[]>(channel);
-                var query = Get(hdl.physTa, gets);
-                if (query.Count() <= 0)
+                if (can.ProtocolType[channel] == ZLG.CAN.Models.ProtocolType.CANFD)
                 {
-                    query = Get(hdl.funcTa, gets);
+                    var gets = can.Receive<ZCAN_ReceiveFD_Data[]>(channel);
+                    var query = Get(hdl.physTa, gets);
                     if (query.Count() <= 0)
                     {
-                        //Console.WriteLine("no frame received");
-                        return;
-                    }
-                }
-                foreach (var q in query)
-                {
-                    if (q.frame.can_id == hdl.physTa)
-                    {
-                        isoTp.link = hdl.physLink;
-                        isoTp.OnCanMessage(q.frame.data, (byte)q.frame.data.Length);
-                    }
-                    else if (q.frame.can_id == hdl.funcTa)
-                    {
-                        if (hdl.physLink.ReceiveStatus != IsoTpReceiveStatus.Idle)
+                        query = Get(hdl.funcTa, gets);
+                        if (query.Count() <= 0)
                         {
-                            Console.WriteLine("func frame received but cannot process because link is not idle");
+                            //Console.WriteLine("no frame received");
                             return;
                         }
-                        isoTp.link = hdl.funcLink;
-                        isoTp.OnCanMessage(q.frame.data, (byte)q.frame.data.Length);
+                    }
+                    foreach (var q in query)
+                    {
+                        if (q.frame.can_id == hdl.physTa)
+                        {
+                            isoTp.link = hdl.physLink;
+                            isoTp.OnCanMessage(q.frame.data, (byte)q.frame.data.Length);
+                        }
+                        else if (q.frame.can_id == hdl.funcTa)
+                        {
+                            if (hdl.physLink.ReceiveStatus != IsoTpReceiveStatus.Idle)
+                            {
+                                Console.WriteLine("func frame received but cannot process because link is not idle");
+                                return;
+                            }
+                            isoTp.link = hdl.funcLink;
+                            isoTp.OnCanMessage(q.frame.data, (byte)q.frame.data.Length);
+                        }
+                    }
+                }
+                else if (can.ProtocolType[channel] == ZLG.CAN.Models.ProtocolType.CAN)
+                {
+                    var gets = can.Receive<ZCAN_Receive_Data[]>(channel);
+                    var query = Get(hdl.physTa, gets);
+                    if (query.Count() <= 0)
+                    {
+                        query = Get(hdl.funcTa, gets);
+                        if (query.Count() <= 0)
+                        {
+                            //Console.WriteLine("no frame received");
+                            return;
+                        }
+                    }
+                    foreach (var q in query)
+                    {
+                        if (q.frame.can_id == hdl.physTa)
+                        {
+                            isoTp.link = hdl.physLink;
+                            isoTp.OnCanMessage(q.frame.data, (byte)q.frame.data.Length);
+                        }
+                        else if (q.frame.can_id == hdl.funcTa)
+                        {
+                            if (hdl.physLink.ReceiveStatus != IsoTpReceiveStatus.Idle)
+                            {
+                                Console.WriteLine("func frame received but cannot process because link is not idle");
+                                return;
+                            }
+                            isoTp.link = hdl.funcLink;
+                            isoTp.OnCanMessage(q.frame.data, (byte)q.frame.data.Length);
+                        }
+                    }
+                }                
+            }
+        }
+
+        private ZCAN_ReceiveFD_Data[] Get(uint id, ZCAN_ReceiveFD_Data[] array)
+        {
+            ZCAN_ReceiveFD_Data[] ret = new ZCAN_ReceiveFD_Data[0];
+            if (array != null)
+            {
+                if (array.Length > 0)
+                {
+                    var query = array.
+                        Where(data => GetId(data.frame.can_id) == id);
+                    ret = query.ToArray();
+                    int index = 0;
+                    foreach (var q in query)
+                    {
+                        ret[index].frame.can_id = GetId(q.frame.can_id);
+                        Console.WriteLine($"{DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss.fff")} " +
+                            $"{can.DeviceInfoIndex[hdl.Channel]} CanId:0x{q.frame.can_id.ToString("X")},通道:{hdl.Channel} 接收:{BitConverter.ToString(q.frame.data)}");
+                        index++;
                     }
                 }
             }
+            return ret;
         }
 
         private ZCAN_Receive_Data[] Get(uint id, ZCAN_Receive_Data[] array)
