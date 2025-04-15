@@ -73,7 +73,7 @@ namespace Triumph.Uds
                     {
                         ret[index].frame.can_id = GetId(q.frame.can_id);
                         Console.WriteLine($"{DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss.fff")} " +
-                            $"CanId:{q.frame.can_id.ToString("X")}接收:{BitConverter.ToString(q.frame.data)}");
+                            $"{can.CanPara.deviceIndex} CanId:0x{q.frame.can_id.ToString("X")},通道:{hdl.Channel} 接收:{BitConverter.ToString(q.frame.data)}");
                         index++;
                     }
                 }
