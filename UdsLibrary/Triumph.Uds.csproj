@@ -44,7 +44,9 @@
   <ItemGroup>
     <Compile Include="Client.cs" />
     <Compile Include="Config.cs" />
+    <Compile Include="IIsoTp.cs" />
     <Compile Include="IsoTpC.cs" />
+    <Compile Include="IsoTpZLGUSBCANFD.cs" />
     <Compile Include="IsoTpZLGUSBCANII.cs" />
     <Compile Include="Models.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
