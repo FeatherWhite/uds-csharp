@@ -8,22 +8,9 @@ using ZLG.CAN;
 
 namespace Triumph.Uds
 {
-    public class UDSIsoTpZLGUSBCANII
+    public class IsoTpZLGUSBCANII : IIsoTp
     {
-        public uint Channel {  get; set; }
-        public IsoTpLink physLink { get; set; }
-        public IsoTpLink funcLink { get; set; }
-        public byte[] SendBuf { get; set; } = new byte[Config.UDS_ISOTP_MTU];
-        public byte[] RecvBuf { get; set; } = new byte[Config.UDS_ISOTP_MTU];
-        public uint physSa { get; set; }
-        public uint physTa { get; set; }
-        public uint funcSa { get; set; }
-        public uint funcTa { get; set; }
-    }
-
-    public class IsoTpZLGUSBCANII
-    {
-        public UDSIsoTpZLGUSBCANII hdl { get; set; }
+        public UDSIsoTpModel hdl { get; set; }
 
         IsoTp isoTp = new IsoTp();
 
@@ -32,7 +19,7 @@ namespace Triumph.Uds
         public IsoTpZLGUSBCANII(USBCanIICommunication can)
         {
             this.can = can;
-            isoTp.can = can;
+            isoTp.SendCan = can.Send;
         }
         private void Receive(uint channel)
         {
@@ -198,7 +185,7 @@ namespace Triumph.Uds
         }
         public UDSErr_t Init(uint sourceAddr,uint targetAddr,uint sourceAddrFunc,uint targetAddrFunc,uint channel = 0)
         {
-            hdl = new UDSIsoTpZLGUSBCANII();
+            hdl = new UDSIsoTpModel();
             hdl.physSa = sourceAddr;
             hdl.physTa = targetAddr;
             hdl.funcSa = sourceAddrFunc;
