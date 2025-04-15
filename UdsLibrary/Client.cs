@@ -11,7 +11,7 @@ namespace Triumph.Uds
     {
         uint p2_ms;
         uint p2Star_ms;
-        public IsoTpZLGUSBCANII Tp { get; set; }
+        public IIsoTp Tp { get; set; }
         uint p2Timer;
         byte state;
         public byte options { get; set; }
