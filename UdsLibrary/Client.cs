@@ -505,6 +505,74 @@ namespace Triumph.Uds
             return SendRequest();
         }
 
+        public UDSErr_t UDSSendSecurityAccess(byte level, byte[] data)
+        {
+            UDSErr_t err = PreRequestCheck();
+            if (err != UDSErr_t.UDS_OK)
+            {
+                return err;
+            }
+            if (UDSSecurityAccessLevelIsReserved(level))
+            {
+                return UDSErr_t.UDS_ERR_INVALID_ARG;
+            }
+            SendBuffer[0] = (byte)UDSDiagnosticServiceId.kSID_SECURITY_ACCESS;
+            SendBuffer[1] = level;
+            if(data == null)
+            {
+                return UDSErr_t.UDS_ERR_INVALID_ARG;
+            }
+            int size = data.Length;
+            if(size > SendBuffer.Length - UDS_0X27_REQ_BASE_LEN)
+            {
+                return UDSErr_t.UDS_ERR_BUFSIZ;
+            }
+            if(size == 0 && data != null)
+            {
+                Console.WriteLine("size == 0 and data is non-null");
+                return UDSErr_t.UDS_ERR_INVALID_ARG;
+            }
+            if(size > 0)
+            {
+                Array.Copy(data, 0, SendBuffer, UDS_0X27_REQ_BASE_LEN, size);
+            }
+            SendSize = Convert.ToUInt16(UDS_0X27_REQ_BASE_LEN + size);
+            return SendRequest();
+        }
+
+        public bool UDSSecurityAccessLevelIsReserved(byte subFunction)
+        {
+            byte securityLevel = Convert.ToByte(subFunction & 0x3F);
+            if(securityLevel == 0)
+            {
+                return true;
+            }
+            if((securityLevel >= 0x43) && (securityLevel <= 0x5E))
+            {
+                return true;
+            }
+            if(securityLevel == 0x7F)
+            {
+                return true;
+            }
+            return false;
+        }
+        public UDSErr_t UDSUnpackSecurityAccessResponse(SecurityAccessResponse resp)
+        {
+            if ((RecvBuffer[0] != UDSResponseSIDOf((byte)UDSDiagnosticServiceId.kSID_SECURITY_ACCESS)))
+            {
+                return UDSErr_t.UDS_ERR_SID_MISMATCH;
+            }
+            if ((RecvSize < UDS_0X27_RESP_BASE_LEN))
+            {
+                return UDSErr_t.UDS_ERR_RESP_TOO_SHORT;
+            }
+            resp.SecurityAccessType = RecvBuffer[1];
+            resp.SecuritySeedLength = Convert.ToUInt16(RecvSize - UDS_0X27_RESP_BASE_LEN);
+            resp.SecuritySeed = resp.SecuritySeedLength == 0 ? null : new byte[] { RecvBuffer[2] };
+            return UDSErr_t.UDS_OK;
+        }
+
         public UDSErr_t UDSSendDiagSessCtrl(byte mode)
         {
             UDSErr_t err = PreRequestCheck();
@@ -518,4 +586,10 @@ namespace Triumph.Uds
             return SendRequest();
         }
     }
+    public struct SecurityAccessResponse
+    {
+        public byte SecurityAccessType;
+        public byte[] SecuritySeed;
+        public ushort SecuritySeedLength;
+    };
 }
