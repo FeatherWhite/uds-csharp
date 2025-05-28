@@ -571,7 +571,16 @@ namespace Triumph.Uds
             }
             resp.SecurityAccessType = RecvBuffer[1];
             resp.SecuritySeedLength = Convert.ToUInt16(RecvSize - UDS_0X27_RESP_BASE_LEN);
-            resp.SecuritySeed = resp.SecuritySeedLength == 0 ? null : new byte[] { RecvBuffer[2] };
+
+            if (resp.SecuritySeedLength == 0)
+            {
+                resp.SecuritySeed = null;
+            }
+            else
+            {
+                resp.SecuritySeed = new byte[resp.SecuritySeedLength];
+                Array.Copy(RecvBuffer, UDS_0X27_RESP_BASE_LEN, resp.SecuritySeed, 0, RecvSize - UDS_0X27_RESP_BASE_LEN);
+            }
             return UDSErr_t.UDS_OK;
         }
 
