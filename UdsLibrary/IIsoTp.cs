@@ -6,8 +6,12 @@ using System.Threading.Tasks;
 
 namespace Triumph.Uds
 {
+    public delegate void LoggerInfoFunc(string message);
+
     public interface IIsoTp
     {
+        event LoggerInfoFunc LogInfo;
+        UDSIsoTpModel hdl { get; set; }
         UDSErr_t Init(uint sourceAddr, uint targetAddr, uint sourceAddrFunc, uint targetAddrFunc, uint channel = 0);
         public int Send(byte[] buf, ushort len, UDSSDU_t? info);
         public uint Poll();

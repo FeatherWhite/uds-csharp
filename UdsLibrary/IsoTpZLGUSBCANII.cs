@@ -15,7 +15,7 @@ namespace Triumph.Uds
         IsoTp isoTp = new IsoTp();
 
         USBCanIICommunication can;
-
+        public event LoggerInfoFunc LogInfo;
         public IsoTpZLGUSBCANII(USBCanIICommunication can)
         {
             this.can = can;
