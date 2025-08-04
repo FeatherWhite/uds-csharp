@@ -102,7 +102,7 @@ namespace Triumph.Uds
         public byte[] RecvBuffer { get; private set; } = new byte[Config.UDS_CLIENT_RECV_BUF_SIZE];
         public byte[] SendBuffer { get; private set; } = new byte[Config.UDS_CLIENT_SEND_BUF_SIZE];
         public byte State { get {return state; } }
-        public uint Channel { get; set; } = 0;
+        public uint Channel {  set { Tp.hdl.Channel = value; } }
 
         public UDSErr_t Init()
         {
