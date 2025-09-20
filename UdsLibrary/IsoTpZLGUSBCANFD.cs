@@ -44,10 +44,15 @@ namespace Triumph.Uds
                     }
                     foreach (var q in query)
                     {
+                        byte[] sourceArray = q.frame.data;
+                        byte[] destinationArray = new byte[8]; // 目标数组
+
+                        // 将源数组的前8个字节拷贝到目标数组
+                        Array.Copy(sourceArray, destinationArray, 8);
                         if (q.frame.can_id == hdl.physTa)
-                        {
+                        {                           
                             isoTp.link = hdl.physLink;
-                            isoTp.OnCanMessage(q.frame.data, (byte)q.frame.data.Length);
+                            isoTp.OnCanMessage(destinationArray, (byte)destinationArray.Length);
                         }
                         else if (q.frame.can_id == hdl.funcTa)
                         {
@@ -57,7 +62,7 @@ namespace Triumph.Uds
                                 return;
                             }
                             isoTp.link = hdl.funcLink;
-                            isoTp.OnCanMessage(q.frame.data, (byte)q.frame.data.Length);
+                            isoTp.OnCanMessage(destinationArray, (byte)destinationArray.Length);
                         }
                     }
                 }
@@ -111,9 +116,9 @@ namespace Triumph.Uds
                     {
                         ret[index].frame.can_id = GetId(q.frame.can_id);
                         LogInfo?.Invoke($"{can.DeviceInfoIndex[hdl.Channel]} CanId:0x{q.frame.can_id.ToString("X")}" +
-                            $",通道:{hdl.Channel} 接收:{BitConverter.ToString(q.frame.data)}"); 
+                            $",通道:{hdl.Channel} 接收:{BitConverter.ToString(q.frame.data,0,8)}"); 
                         Console.WriteLine($"{DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss.fff")} " +
-                            $"{can.DeviceInfoIndex[hdl.Channel]} CanId:0x{q.frame.can_id.ToString("X")},通道:{hdl.Channel} 接收:{BitConverter.ToString(q.frame.data)}");
+                            $"{can.DeviceInfoIndex[hdl.Channel]} CanId:0x{q.frame.can_id.ToString("X")},通道:{hdl.Channel} 接收:{BitConverter.ToString(q.frame.data,0,8)}");
                         index++;
                     }
                 }
