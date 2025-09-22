@@ -133,6 +133,7 @@ namespace Triumph.Uds
         public uint Poll()
         {
             uint status = 0;
+            isoTp.Channel = hdl.Channel;
             Receive(hdl.Channel);
             isoTp.link = hdl.physLink;
             isoTp.Poll();
@@ -150,6 +151,7 @@ namespace Triumph.Uds
         public int Send(byte[] buf, ushort len, UDSSDU_t? info)
         {
             int ret = -1;
+            isoTp.Channel = hdl.Channel;
             UDS_A_TA_Type_t ta_type = (info.HasValue) ? info.Value.A_TA_Type : (byte)UDS_A_TA_Type_t.PHYSICAL;
             switch (ta_type)
             {
