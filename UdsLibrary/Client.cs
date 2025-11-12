@@ -445,6 +445,33 @@ namespace Triumph.Uds
             return SendRequest();
         }
 
+        public UDSErr_t UDSSendRDBI0x80(ushort[] didList, ushort numDataIdentifiers)
+        {
+            const ushort didLenBytes = 2;
+            UDSErr_t err = PreRequestCheck();
+            if (err != UDSErr_t.UDS_OK)
+            {
+                return err;
+            }
+            if (didList == null || numDataIdentifiers == 0)
+            {
+                return UDSErr_t.UDS_ERR_INVALID_ARG;
+            }
+            SendBuffer[0] = (byte)UDSDiagnosticServiceId.kSID_READ_DATA_BY_IDENTIFIERCustomization;
+            for (int i = 0; i < numDataIdentifiers; i++)
+            {
+                ushort offset = (ushort)(1 + didLenBytes * i);
+                if ((offset + 2) > SendBuffer.Length)
+                {
+                    return UDSErr_t.UDS_ERR_INVALID_ARG;
+                }
+                SendBuffer[offset] = Convert.ToByte((didList[i] & 0xFF00) >> 8);
+                SendBuffer[offset + 1] = Convert.ToByte(didList[i] & 0xFF);
+            }
+            SendSize = Convert.ToUInt16(1 + (numDataIdentifiers * didLenBytes));
+            return SendRequest();
+        }
+
         public UDSErr_t UDSUnpackRDBIResponse<T>(UDSRDBIVar<T>[] vars ,ushort numVars) where T : new()
         {
             ushort offset = UDS_0X22_RESP_BASE_LEN;
