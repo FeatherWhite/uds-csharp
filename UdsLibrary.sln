@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio Version 17
-VisualStudioVersion = 17.11.35312.102
+# Visual Studio Version 18
+VisualStudioVersion = 18.3.11206.111 d18.3
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Triumph.Uds", "UdsLibrary\Triumph.Uds.csproj", "{E955586D-2120-437F-AF64-AF7F816A77EE}"
 EndProject
@@ -10,6 +10,8 @@ EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Triumph.UdsTests", "Triumph.UdsTests\Triumph.UdsTests.csproj", "{A57A2CB4-7F0E-42F5-A747-1929E580AB4C}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ZLG.CAN", "..\ZLG.CAN\ZLG.CAN\ZLG.CAN.csproj", "{4E3743B4-DDB7-49B8-9354-08A157ADF246}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Triumph.CAN", "..\Triumph.CAN\Triumph.CAN.csproj", "{7E356BFE-FF06-4134-9136-B45476CBFF74}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -33,6 +35,10 @@ Global
 		{4E3743B4-DDB7-49B8-9354-08A157ADF246}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{4E3743B4-DDB7-49B8-9354-08A157ADF246}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{4E3743B4-DDB7-49B8-9354-08A157ADF246}.Release|Any CPU.Build.0 = Release|Any CPU
+		{7E356BFE-FF06-4134-9136-B45476CBFF74}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{7E356BFE-FF06-4134-9136-B45476CBFF74}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{7E356BFE-FF06-4134-9136-B45476CBFF74}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{7E356BFE-FF06-4134-9136-B45476CBFF74}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
