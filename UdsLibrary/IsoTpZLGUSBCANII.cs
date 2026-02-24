@@ -74,6 +74,8 @@ namespace Triumph.Uds
                         ret[index].frame.can_id = GetId(q.frame.can_id);
                         Console.WriteLine($"{DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss.fff")} " +
                             $"{can.CanPara.deviceIndex} CanId:0x{q.frame.can_id.ToString("X")},通道:{hdl.Channel} 接收:{BitConverter.ToString(q.frame.data)}");
+                        LogInfo?.Invoke($"USBCANII CanId:0x{q.frame.can_id.ToString("X")}" +
+                            $",通道:{hdl.Channel} 接收:{BitConverter.ToString(q.frame.data, 0, 8)}");
                         index++;
                     }
                 }
