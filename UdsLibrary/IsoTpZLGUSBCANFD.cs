@@ -2,6 +2,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Security.Cryptography;
 using System.Text;
 using System.Threading.Tasks;
 using ZLG.CAN;
@@ -45,14 +46,15 @@ namespace Triumph.Uds
                     foreach (var q in query)
                     {
                         byte[] sourceArray = q.frame.data;
-                        byte[] destinationArray = new byte[8]; // 目标数组
-
+                        int receiveLength = byte.Parse(q.frame.len.ToString(), System.Globalization.NumberStyles.HexNumber);
+                        byte[] destinationArray = new byte[receiveLength]; // 目标数组
+                        
                         // 将源数组的前8个字节拷贝到目标数组
-                        Array.Copy(sourceArray, destinationArray, 8);
+                        Array.Copy(sourceArray, destinationArray, receiveLength);
                         if (q.frame.can_id == hdl.physTa)
                         {                           
                             isoTp.link = hdl.physLink;
-                            isoTp.OnCanMessage(destinationArray, (byte)destinationArray.Length);
+                            isoTp.OnCanMessage(destinationArray, (byte)receiveLength);
                         }
                         else if (q.frame.can_id == hdl.funcTa)
                         {
@@ -62,7 +64,7 @@ namespace Triumph.Uds
                                 return;
                             }
                             isoTp.link = hdl.funcLink;
-                            isoTp.OnCanMessage(destinationArray, (byte)destinationArray.Length);
+                            isoTp.OnCanMessage(destinationArray, (byte)receiveLength);
                         }
                     }
                 }
@@ -115,10 +117,11 @@ namespace Triumph.Uds
                     foreach (var q in query)
                     {
                         ret[index].frame.can_id = GetId(q.frame.can_id);
+                        int receiveLength = byte.Parse(q.frame.len.ToString(), System.Globalization.NumberStyles.HexNumber);
                         LogInfo?.Invoke($"{can.DeviceInfoIndex[hdl.Channel]} CanId:0x{q.frame.can_id.ToString("X")}" +
-                            $",通道:{hdl.Channel} 接收:{BitConverter.ToString(q.frame.data,0,8)}"); 
+                            $",通道:{hdl.Channel} 接收:{BitConverter.ToString(q.frame.data,0, receiveLength)}");
                         Console.WriteLine($"{DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss.fff")} " +
-                            $"{can.DeviceInfoIndex[hdl.Channel]} CanId:0x{q.frame.can_id.ToString("X")},通道:{hdl.Channel} 接收:{BitConverter.ToString(q.frame.data,0,8)}");
+                            $"{can.DeviceInfoIndex[hdl.Channel]} CanId:0x{q.frame.can_id.ToString("X")},通道:{hdl.Channel} 接收:{BitConverter.ToString(q.frame.data,0, receiveLength)}");
                         index++;
                     }
                 }
