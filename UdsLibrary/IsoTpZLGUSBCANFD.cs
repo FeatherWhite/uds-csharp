@@ -46,7 +46,7 @@ namespace Triumph.Uds
                     foreach (var q in query)
                     {
                         byte[] sourceArray = q.frame.data;
-                        int receiveLength = byte.Parse(q.frame.len.ToString(), System.Globalization.NumberStyles.HexNumber);
+                        int receiveLength = q.frame.len;
                         byte[] destinationArray = new byte[receiveLength]; // 目标数组
                         
                         // 将源数组的前8个字节拷贝到目标数组
@@ -117,7 +117,7 @@ namespace Triumph.Uds
                     foreach (var q in query)
                     {
                         ret[index].frame.can_id = GetId(q.frame.can_id);
-                        int receiveLength = byte.Parse(q.frame.len.ToString(), System.Globalization.NumberStyles.HexNumber);
+                        int receiveLength = q.frame.len;
                         LogInfo?.Invoke($"{can.DeviceInfoIndex[hdl.Channel]} CanId:0x{q.frame.can_id.ToString("X")}" +
                             $",通道:{hdl.Channel} 接收:{BitConverter.ToString(q.frame.data,0, receiveLength)}");
                         Console.WriteLine($"{DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss.fff")} " +
