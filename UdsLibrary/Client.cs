@@ -623,6 +623,50 @@ namespace Triumph.Uds
             SendSize = 2;
             return SendRequest();
         }
+
+        public UDSErr_t UDSSendIOCtrl(ushort dataIdentifier, byte controlOption, byte[] controlState)
+        {
+            UDSErr_t err = PreRequestCheck();
+            if (err != UDSErr_t.UDS_OK) return err;
+
+            int stateLen = controlState?.Length ?? 0;
+
+            // 检查缓冲区是否够大 (SID 1 + DID 2 + Option 1 + State N)
+            if (4 + stateLen > SendBuffer.Length)
+            {
+                return UDSErr_t.UDS_ERR_BUFSIZ;
+            }
+            // 2. 填充 SID
+            SendBuffer[0] = (byte)UDSDiagnosticServiceId.kSID_INPUT_CONTROL_BY_IDENTIFIER;
+
+            // 3. 填充 DataIdentifier (大端序)
+            SendBuffer[1] = (byte)(dataIdentifier >> 8);
+            SendBuffer[2] = (byte)(dataIdentifier & 0xFF);
+
+            // 4. 填充 ControlOptionRecord (如 03-ShortTermAdjustment)
+            SendBuffer[3] = controlOption;
+
+            //Array.Copy(controlState, 0, SendBuffer, 4, controlState.Length);
+
+            if (stateLen > 0 && controlState != null)
+            {
+                Array.Copy(controlState, 0, SendBuffer, 4, stateLen);
+            }
+            else if (stateLen == 0)
+            {
+                if (controlOption == 0x02 || controlOption == 0x03)
+                {
+                    // 短期调节或冻结状态必须提供控制参数，否则属于非法调用
+                    // 提前拦截，避免总线产生无效流量和 ECU 报错
+                    return UDSErr_t.UDS_ERR_INVALID_ARG;
+                }
+            }
+
+            SendSize = (ushort)(4 + stateLen);
+
+            // 6. 发送请求
+            return SendRequest();
+        }
     }
     public struct SecurityAccessResponse
     {
