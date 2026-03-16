@@ -532,6 +532,30 @@ namespace Triumph.Uds
             return SendRequest();
         }
 
+        public UDSErr_t UDSSendWDBI0x82(ushort dataIdentifier, byte[] data)
+        {
+            UDSErr_t err = PreRequestCheck();
+            ushort size = Convert.ToUInt16(data.Length);
+            if (err != UDSErr_t.UDS_OK)
+            {
+                return err;
+            }
+            if (data == null || size == 0)
+            {
+                return UDSErr_t.UDS_ERR_INVALID_ARG;
+            }
+            SendBuffer[0] = 0x82;
+            if (SendBuffer.Length <= 3 || SendBuffer.Length <= 3 + size)
+            {
+                return UDSErr_t.UDS_ERR_BUFSIZ;
+            }
+            SendBuffer[1] = Convert.ToByte((dataIdentifier & 0xFF00) >> 8);
+            SendBuffer[2] = Convert.ToByte(dataIdentifier & 0xFF);
+            Array.Copy(data, 0, SendBuffer, 3, size);
+            SendSize = Convert.ToUInt16(3 + size);
+            return SendRequest();
+        }
+
         public UDSErr_t UDSSendSecurityAccess(byte level, byte[] data = null)
         {
             UDSErr_t err = PreRequestCheck();
