@@ -648,6 +648,81 @@ namespace Triumph.Uds
             return SendRequest();
         }
 
+        /// <summary>
+        /// 读取故障码 (SID 0x19, SubFunction 0x02)
+        /// </summary>
+        /// <param name="statusMask">状态掩码，默认 0x09 代表已确认且当前存在的故障</param>
+        public UDSErr_t UDSSendReadDTCByStatusMask(byte statusMask = 0x09)
+        {
+            // 1. 前置检查（如连接状态、通道占用等）
+            UDSErr_t err = PreRequestCheck();
+            if (err != UDSErr_t.UDS_OK)
+            {
+                return err;
+            }
+
+            // 2. 构造协议数据
+            // SendBuffer[0] = 0x19 (ReadDTCInformation)
+            SendBuffer[0] = (byte)0x19;
+
+            // SendBuffer[1] = 0x02 (reportDTCByStatusMask)
+            SendBuffer[1] = 0x02;
+
+            // SendBuffer[2] = DTCStatusMask (例如 0x09)
+            SendBuffer[2] = statusMask;
+
+            // 设置发送长度为 3 字节
+            SendSize = 3;
+
+            // 3. 执行发送
+            return SendRequest();
+        }
+
+        /// <summary>
+        /// 发送 UDS 0x31 例程控制服务
+        /// </summary>
+        /// <param name="controlType">控制类型: 0x01-Start, 0x02-Stop, 0x03-RequestResults</param>
+        /// <param name="routineId">例程 ID (2 字节)</param>
+        /// <param name="parameters">可选的附加参数</param>
+        /// <returns>UDS 错误码</returns>
+        public UDSErr_t UDSSendRoutineControl(byte controlType, ushort routineId, byte[] parameters = null)
+        {
+            // 1. 前置状态检查
+            UDSErr_t err = PreRequestCheck();
+            if (err != UDSErr_t.UDS_OK)
+            {
+                return err;
+            }
+
+            // 2. 构造发送缓存
+            // Index 0: SID (0x31)
+            SendBuffer[0] = (byte)UDSDiagnosticServiceId.kSID_ROUTINE_CONTROL; // 0x31
+
+            // Index 1: Routine Control Type (如 0x01 代表 StartRoutine)
+            SendBuffer[1] = controlType;
+
+            // Index 2-3: Routine Identifier (大端模式)
+            // 对应你报文中的 29 03
+            SendBuffer[2] = (byte)(routineId >> 8);
+            SendBuffer[3] = (byte)(routineId & 0xFF);
+
+            int currentSize = 4;
+
+            // 3. 填充附加参数 (如果有)
+            // 对应你报文中的 01 01
+            if (parameters != null && parameters.Length > 0)
+            {
+                // 注意：需确保 SendBuffer 长度足够，防止溢出
+                Array.Copy(parameters, 0, SendBuffer, currentSize, parameters.Length);
+                currentSize += parameters.Length;
+            }
+
+            SendSize = (ushort)currentSize;
+
+            // 4. 发送请求并返回结果
+            return SendRequest();
+        }
+
         public UDSErr_t UDSSendIOCtrl(ushort dataIdentifier, byte controlOption, byte[] controlState)
         {
             UDSErr_t err = PreRequestCheck();
